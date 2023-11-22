@@ -8,8 +8,6 @@ import torch
 from torch.utils import data
 from torchvision import transforms
 
-from .util import Equirec2Cube
-
 
 def read_list(list_file):
     rgb_depth_list = []
