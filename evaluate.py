@@ -14,7 +14,7 @@ from saver import Saver
 parser = argparse.ArgumentParser(description="360 Degree Panorama Depth Estimation Test")
 
 parser.add_argument("--data_path", default="G:/Standford2D3D/", type=str, help="path to the dataset.")
-parser.add_argument("--dataset", default="stanford2d3d", choices=["3d60", "panosuncg", "stanford2d3d", "matterport3d"],
+parser.add_argument("--dataset", default="stanford2d3d", choices=["3d60", "stanford2d3d", "matterport3d"],
                     type=str, help="dataset to evaluate on.")
 
 parser.add_argument("--load_weights_dir",default='\\weights_1\\', type=str, help="folder of model to load")
