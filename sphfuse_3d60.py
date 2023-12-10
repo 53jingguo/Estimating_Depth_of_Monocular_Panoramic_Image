@@ -4,11 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from .convnext import *
-
-from .resnet import *
-from .mobilenet import *
 from .layers import Conv3x3, ConvBlock, upsample, subpixelconvolution, Concat, add
-
 from collections import OrderedDict
 
 class sconv(nn.Module):
@@ -80,8 +76,6 @@ class DoubleConv3(nn.Module):
         return x1
 
 class Down(nn.Module):
-    """Downscaling with maxpool then double conv"""
-
     def __init__(self, in_channels, out_channels):
         super().__init__()
         # self.maxpool=nn.MaxPool2d(2)
@@ -91,8 +85,6 @@ class Down(nn.Module):
         return self.conv(x,lut,lut1)
 
 class SphFuse_360(nn.Module):
-    """ UniFuse Model: Resnet based Euqi Encoder and Cube Encoder + Euqi Decoder
-    """
     def __init__(self, num_layers, equi_h, equi_w, pretrained=False, max_depth=10.0,
                  fusion_type="cee", se_in_fusion=True):
         super(SphFuse_360, self).__init__()
@@ -108,10 +100,7 @@ class SphFuse_360(nn.Module):
         self.equi_encoder = convnext_base(pretrained)
         self.inc = DoubleConv2(3, 128)
         self.conv = DoubleConv3(128, 128)
-        self.down1 = Down(128, 256)  # 128
-        # self.down2 = Down(256, 512)  # 64
-        # self.down3 = Down(512, 1024)  # 32
-
+        self.down1 = Down(128, 256)
         self.num_ch_enc = np.array([128, 128, 256, 512, 1024])  #
         self.num_ch_dec = np.array([32, 64, 128, 256, 512])
         self.equi_dec_convs = OrderedDict()
@@ -156,13 +145,7 @@ class SphFuse_360(nn.Module):
         sph_enc_feat0 = self.inc(input_equi_image, lut256, lut64)
         sph_enc_feat1 = self.conv(sph_enc_feat0, lut64)
         sph_enc_feat2 = self.down1(sph_enc_feat1, lut64, lut32)
-
-
-
-        # euqi image decoding fused with cubemap features
         outputs = {}
-
-
         equi_x = upsample(self.equi_dec_convs["upconv_5"](equi_enc_feat4))
 
         equi_x = torch.cat([equi_x, equi_enc_feat3], 1)
